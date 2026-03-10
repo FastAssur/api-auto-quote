@@ -9,8 +9,9 @@ WORKDIR="/opt/api-auto-quote"
 PORT=5001
 UNIT="/etc/systemd/system/${SERVICE}.service"
 
-echo "=== [1/5] Installation des dépendances Python ==="
-pip3 install --break-system-packages -r "${WORKDIR}/requirements.txt"
+echo "=== [1/5] Création du venv et installation des dépendances Python ==="
+python3 -m venv "${WORKDIR}/venv"
+"${WORKDIR}/venv/bin/pip" install -r "${WORKDIR}/requirements.txt"
 
 echo "=== [2/5] Ouverture du port ${PORT} via ufw ==="
 ufw allow ${PORT}/tcp
@@ -25,7 +26,7 @@ After=network.target
 [Service]
 User=root
 WorkingDirectory=${WORKDIR}
-ExecStart=/usr/bin/python3 ${WORKDIR}/api.py
+ExecStart=${WORKDIR}/venv/bin/python3 ${WORKDIR}/api.py
 Restart=always
 RestartSec=5
 StandardOutput=journal
